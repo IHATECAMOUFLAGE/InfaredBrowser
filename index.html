@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chrome</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div id="notification" class="hidden">
+    <span id="notification-text"></span>
+    <span id="notification-close">✕</span>
+</div>
+  <main>
+    <nav>
+      <div class="nav-top">
+        <div class="tab-searcher">
+          <span id="button" title="This is not a feature"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg></span>
+        </div>
+        <div class="tab-container">
+          <span title="New Tab" style="cursor: pointer; border-radius: 5px; width: 10px; height: 20px; display: flex; justify-content: center; align-items: center; text-align: center; padding: 0 5px;" onclick="addTab(`chrome:\/\/newtab`)"><p>+</p></span>
+        </div>
+        <div class="window-options">
+          <ul>
+            <li title="This is not a feature"><i class="fa-solid fa-minimize"></i></li>
+            <li title="This is not a feature"><i class="fa-regular fa-square"></i></li>
+            <li title="This is not a feature"><i class="fa-solid fa-x"></i></li>
+          </ul>
+        </div>
+      </div>
+      <div class="nav-bottom">
+        <div class="top">
+          <div class="controls">
+            <ul>
+              <li title="Click to go back"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#ffffff"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></li>
+              <li title="Click to go forward"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#ffffff"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></li>
+              <li title="Reload this page"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#ffffff"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg></li>
+              <li title="Open the home page"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg></li>
+            </ul>
+          </div>
+          <div class="input">
+            <span title="Site information" class="site-check"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#FfFfFF"><path d="M444-216h72v-108h108v-72H516v-108h-72v108H336v72h108v108ZM263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm96-456h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg></span>
+            <input type="text" placeholder="Search Google or type a URL">
+            <span title="Bookmark this tab" class="bookmark-star"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#D3D3D3"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></span>
+          </div>
+          <div class="menu">
+
+          </div>
+        </div>
+        <div class="bottom">
+
+        </div>
+      </div>
+    </nav>
+    <div class="window"></div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
