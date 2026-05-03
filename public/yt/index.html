@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>YouTube</title>
+<link rel="icon" href="https://www.google.com/s2/favicons?domain=https://youtube.com&sz=256" type="image/png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="sidebar-full">
+<div class="backdrop" id="backdrop"></div>
+<header class="header">
+  <div class="header-left">
+    <button class="menu-toggle-btn" id="menuToggle">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+    <div class="brand" id="homeLogo">
+      <svg class="brand-svg" viewBox="0 0 90 20" preserveAspectRatio="xMidYMid meet" focusable="false">
+        <g>
+          <rect x="0" y="0" width="24" height="20" rx="4" fill="#ff0000"></rect>
+          <polygon points="10,6 16,10 10,14" fill="#ffffff"></polygon>
+        </g>
+        <text x="30" y="14" fill="#ffffff" font-size="11" font-family="Roboto, sans-serif">YouTube</text>
+      </svg>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="search-wrapper">
+      <input id="searchInput" type="text" placeholder="Search" class="search-input" autocomplete="off">
+      <button class="search-btn" id="searchButton">
+        <span class="material-symbols-rounded">search</span>
+      </button>
+      <div id="autocomplete" class="autocomplete"></div>
+    </div>
+    <button class="mic-btn">
+      <span class="material-symbols-rounded">mic</span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="notification-btn" id="notificationBtn">
+      <span class="material-symbols-rounded">notifications</span>
+    </button>
+    <button class="account-btn" id="accountBtn">
+      <span class="material-symbols-rounded">account_circle</span>
+    </button>
+  </div>
+</header>
+<main class="main">
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-section">
+      <a class="sidebar-item active" data-page="home" data-tooltip="Home">
+        <span class="material-symbols-rounded sidebar-icon">home</span>
+        <span class="sidebar-label">Home</span>
+      </a>
+      <a class="sidebar-item" data-page="shorts" data-tooltip="Shorts">
+        <span class="material-symbols-rounded sidebar-icon">play_circle</span>
+        <span class="sidebar-label">Shorts</span>
+      </a>
+      <a class="sidebar-item" data-page="subscriptions" data-tooltip="Subscriptions">
+        <span class="material-symbols-rounded sidebar-icon">subscriptions</span>
+        <span class="sidebar-label">Subscriptions</span>
+      </a>
+    </nav>
+    <hr class="sidebar-divider">
+    <nav class="sidebar-section">
+      <a class="sidebar-item" data-page="library" data-tooltip="Library">
+        <span class="material-symbols-rounded sidebar-icon">video_library</span>
+        <span class="sidebar-label">Library</span>
+      </a>
+      <a class="sidebar-item" data-page="history" data-tooltip="History">
+        <span class="material-symbols-rounded sidebar-icon">history</span>
+        <span class="sidebar-label">History</span>
+      </a>
+      <a class="sidebar-item" data-page="liked" data-tooltip="Liked videos">
+        <span class="material-symbols-rounded sidebar-icon">thumb_up</span>
+        <span class="sidebar-label">Liked videos</span>
+      </a>
+    </nav>
+  </aside>
+  <section class="content">
+    <div class="chips-row" id="chipsRow">
+      <button class="chip active" data-query="">All</button>
+      <button class="chip" data-query="Music">Music</button>
+      <button class="chip" data-query="Gaming">Gaming</button>
+      <button class="chip" data-query="News">News</button>
+      <button class="chip" data-query="Live">Live</button>
+      <button class="chip" data-query="Vlogs">Vlogs</button>
+      <button class="chip" data-query="Programming">Programming</button>
+      <button class="chip" data-query="Cooking">Cooking</button>
+    </div>
+    <div id="mainSection" class="home-section">
+      <h2 id="pageTitle" class="section-header">Recommended</h2>
+      <div id="mainEmpty" class="empty-state" style="display:none;">
+        <span class="material-symbols-rounded">search_off</span>
+        <p>No videos found.</p>
+      </div>
+      <div id="resultsGrid" class="video-grid"></div>
+    </div>
+    <div id="shortsSection" class="home-section hidden">
+      <h2 class="section-header" style="display:block;">Shorts</h2>
+      <div id="shortsGrid" class="shorts-grid"></div>
+    </div>
+    <div id="watchLayout" class="watch-layout hidden">
+      <div class="watch-left">
+        <div class="watch-player">
+          <iframe id="mainPlayer" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <h1 id="watchTitle" class="watch-title"></h1>
+        <div class="watch-meta-row">
+          <div class="watch-channel">
+            <div class="watch-channel-avatar"></div>
+            <div>
+              <div id="watchChannelName" style="font-weight:600; color:var(--text-primary);"></div>
+              <div id="watchViews" style="font-size:12px;color:var(--text-secondary);"></div>
+            </div>
+          </div>
+          <div class="watch-actions">
+            <div class="embed-toggle">
+              <button id="embedYoutube" class="active">YouTube</button>
+              <button id="embedTheta">Ad-less</button>
+            </div>
+            <button id="likeBtn" class="pill-btn">
+              <span class="material-symbols-rounded" style="font-size:18px;">thumb_up</span>
+              <span id="likeText">Like</span>
+            </button>
+            <button class="pill-btn">
+              <span class="material-symbols-rounded" style="font-size:18px;">share</span>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+        <div id="watchDescription" class="watch-description">Description goes here.</div>
+      </div>
+      <div class="watch-right">
+        <div id="relatedList" class="related-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast" class="toast">Notification</div>
+<script src="script.js"></script>
+</body>
+</html>

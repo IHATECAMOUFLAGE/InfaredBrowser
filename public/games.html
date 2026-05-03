@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloakZone</title>
+
+    <link href="./css/main.css" rel="stylesheet">
+    <link href="./css/games.css" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <input id="searchBar" type="text" placeholder="Search games..." />
+        <div id="cardsContainer" style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        "></div>
+
+        <script>
+            async function loadGames() {
+            const response = await fetch("games/games.json");
+            const games = await response.json();
+
+            const container = document.getElementById("cardsContainer");
+
+            games.forEach(game => {
+                const card = document.createElement("a");
+                card.className = "card";
+                card.href = game.link;
+                card.setAttribute('data-url', card.href);
+
+                const img = document.createElement("div");
+                img.className = "img";
+                img.setAttribute('loading', 'lazy');
+                img.style.backgroundImage = `url('${game.imgSrc}')`;
+
+                const title = document.createElement("p");
+                title.textContent = game.title;
+
+                card.appendChild(img);
+                card.appendChild(title);
+                container.appendChild(card);
+            });
+            }
+
+            const searchBar = document.getElementById("searchBar");
+
+            searchBar.addEventListener("input", () => {
+            const query = searchBar.value.toLowerCase();
+            const cards = document.querySelectorAll(".card");
+
+            cards.forEach(card => {
+                const title = card.querySelector("p").textContent.toLowerCase();
+                card.style.display = title.includes(query) ? "flex" : "none";
+            });
+            });
+
+            loadGames();
+        </script>
+    </main>
+</body>
+</html>
