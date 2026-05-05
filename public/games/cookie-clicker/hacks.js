@@ -64,7 +64,6 @@
 
     document.body.appendChild(menu);
 
-    // Dragging
     let isDragging = false, offsetX, offsetY;
 
     menu.addEventListener("mousedown", (e) => {
@@ -84,7 +83,6 @@
       isDragging = false;
     });
 
-    // Cookie setter
     document.getElementById("applyCookies").onclick = () => {
       const val = Number(document.getElementById("cookieInput").value);
       settings.cookies = val;
@@ -93,7 +91,6 @@
       saveSettings();
     };
 
-    // Auto slider
     const autoSlider = document.getElementById("autoSlider");
     const autoValue = document.getElementById("autoValue");
 
@@ -103,7 +100,6 @@
       saveSettings();
     };
 
-    // Auto clicker toggle
     document.getElementById("toggleAuto").onclick = () => {
       settings.autoClickerOn = !settings.autoClickerOn;
 
@@ -120,7 +116,6 @@
       saveSettings();
     };
 
-    // FPS slider
     const fpsSlider = document.getElementById("fpsSlider");
     const fpsValue = document.getElementById("fpsValue");
 
@@ -134,14 +129,12 @@
       Game.fps = settings.fps;
     };
 
-    // Close
     document.getElementById("closeMenu").onclick = toggleMenu;
 
-    // Restore auto clicker if enabled
     if (settings.autoClickerOn) {
       autoClickerInterval = setInterval(() => {
-        Game.cookiesEarned = settings.autoCookies;
-        Game.cookies = settings.autoCookies;
+        Game.cookiesEarned += settings.autoCookies;
+        Game.cookies += settings.autoCookies;
       }, 100);
     }
   }
