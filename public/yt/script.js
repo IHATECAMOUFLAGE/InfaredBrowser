@@ -424,7 +424,7 @@ function setEmbedMode(mode, id) {
     els.mainPlayer.src =
       "https://www.youtube.com/embed/" +
       encodeURIComponent(id) +
-      "?autoplay=1&rel=0&modestbranding=1";
+      "?feature=oembed&autoplay=1&rel=0";
   } else {
   els.embedTheta.classList.add("active");
   fetch(

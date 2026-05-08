@@ -1,79 +1,93 @@
-export default async function searchRoutes(fastify, options) {
-  fastify.get("/api/search", async (request, reply) => {
-    const { query } = request.query;
-    
-    if (!query) {
-      return reply.code(400).send({ results: [] });
-    }
+export default async function handler(req, res) {
+  const { query } = req.query;
 
-    const q = encodeURIComponent(query + " youtube");
-    const url = "https://video.search.yahoo.com/search/video?p=" + q;
+  if (!query) {
+    res.status(400).json({ results: [] });
+    return;
+  }
 
-    try {
-      const response = await fetch(url, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-          "Accept": "text/html"
-        }
+  try {
+    const results = [];
+    const seen = new Set();
+
+    const searchUrl =
+      "https://ytapi.apps.mattw.io/v3/search?" +
+      new URLSearchParams({
+        part: "snippet",
+        q: query,
+        type: "video",
+        maxResults: "30",
+        key: "foo1"
       });
 
-      const html = await response.text();
-      const results = [];
-
-      const jsonMatch = html.match(/YUI\.Env\.SrpResults\s*=\s*(\{[\s\S]*?\});/);
-
-      if (jsonMatch && jsonMatch[1]) {
-        try {
-          const data = JSON.parse(jsonMatch[1]);
-          if (data.content && Array.isArray(data.content)) {
-            for (const item of data.content) {
-              const target = item.rurl || item.url || "";
-              const idMatch = target.match(/(?:v=|youtu\.be\/|\/embed\/)([a-zA-Z0-9_-]{11})/);
-              if (!idMatch) continue;
-
-              const id = idMatch[1];
-              const title = (item.tit || item.title || "").replace(/\\u003C\/?b\\u003E/g, "").trim();
-
-              results.push({
-                id,
-                title,
-                thumbnail: "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg",
-                duration: item.l || "",
-                views: item.viewsShortFormat || "",
-                channel: item.channel || "YouTube"
-              });
-            }
-          }
-        } catch (e) {}
+    const searchResponse = await fetch(searchUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        Accept: "application/json"
       }
+    });
 
-      if (results.length === 0) {
-        const regex = /<a[^>]+href="([^"]+youtube\.com\/watch\?v=[^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
-        const seen = new Set();
-        let m;
-        while ((m = regex.exec(html)) !== null) {
-          const url = m[1];
-          const idMatch = url.match(/v=([a-zA-Z0-9_-]{11})/);
-          if (!idMatch) continue;
-          const id = idMatch[1];
-          if (seen.has(id)) continue;
-          seen.add(id);
-          const title = m[2].replace(/<[^>]+>/g, " ").trim();
-          results.push({
-            id,
-            title,
-            thumbnail: "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg",
-            duration: "",
-            views: "",
-            channel: "YouTube"
-          });
-          if (results.length >= 30) break;
-        }
-      }
-
-      return reply.send({ results });
-    } catch (e) {
-      return reply.code(500).send({ results: [] });
+    if (!searchResponse.ok) {
+      res.status(200).json({ results: [] });
+      return;
     }
-  });
+
+    const searchData = await searchResponse.json();
+
+    const ids = [];
+
+    for (const item of searchData.items || []) {
+      const id = item.id?.videoId;
+
+      if (!id || seen.has(id)) continue;
+
+      seen.add(id);
+      ids.push(id);
+    }
+
+    if (ids.length === 0) {
+      res.status(200).json({ results: [] });
+      return;
+    }
+
+    const videosUrl =
+      "https://ytapi.apps.mattw.io/v3/videos?" +
+      new URLSearchParams({
+        part: "snippet,contentDetails,statistics",
+        id: ids.join(","),
+        key: "foo1"
+      });
+
+    const videosResponse = await fetch(videosUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        Accept: "application/json"
+      }
+    });
+
+    if (!videosResponse.ok) {
+      res.status(200).json({ results: [] });
+      return;
+    }
+
+    const videosData = await videosResponse.json();
+
+    for (const item of videosData.items || []) {
+      results.push({
+        id: item.id,
+        title: item.snippet?.title || "",
+        thumbnail:
+          item.snippet?.thumbnails?.medium?.url ||
+          item.snippet?.thumbnails?.default?.url ||
+          `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
+        duration: item.contentDetails?.duration || "unknown",
+        views: item.statistics?.viewCount || "unknown",
+        channel: item.snippet?.channelTitle || "YouTube"
+      });
+    }
+
+    res.status(200).json({ results });
+  } catch (e) {
+    res.status(500).json({ results: [] });
+  }
 }

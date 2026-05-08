@@ -9,7 +9,7 @@
     autoCookies: 1000,
     fps: 30,
     autoClickerOn: false,
-    mode: "earn" // add | set | earn | click
+    mode: "earn"
   };
 
   let settings = loadSettings();
@@ -84,7 +84,7 @@
         <button id="applyCookies">Apply</button><br><br>
 
         <label>Auto Amount:</label><br>
-        <input type="range" id="autoSlider" min="1" max="100000" value="${settings.autoCookies}">
+        <input type="range" id="autoSlider" min="1" max="10000000000000000000000000000" value="${settings.autoCookies}">
         <span id="autoValue">${settings.autoCookies}</span><br><br>
 
         <label>Mode:</label><br>
@@ -98,7 +98,7 @@
         <button id="toggleAuto">Toggle Auto Clicker</button><br><br>
 
         <label>FPS:</label><br>
-        <input type="range" id="fpsSlider" min="1" max="120" value="${settings.fps}">
+        <input type="range" id="fpsSlider" min="1" max="12000" value="${settings.fps}">
         <span id="fpsValue">${settings.fps}</span><br>
         <button id="applyFPS">Apply FPS</button><br><br>
 
@@ -108,10 +108,8 @@
 
     document.body.appendChild(menu);
 
-    // Restore mode
     document.getElementById("modeSelect").value = settings.mode;
 
-    // Dragging (header only)
     const header = document.getElementById("header");
     let isDragging = false, offsetX, offsetY;
 
@@ -130,7 +128,6 @@
 
     document.addEventListener("mouseup", () => isDragging = false);
 
-    // Live cookies display
     setInterval(() => {
       if (window.Game) {
         document.getElementById("liveCookies").textContent =
@@ -138,7 +135,6 @@
       }
     }, 200);
 
-    // Set cookies
     document.getElementById("applyCookies").onclick = () => {
       const val = Number(document.getElementById("cookieInput").value);
       settings.cookies = val;
@@ -147,7 +143,6 @@
       saveSettings();
     };
 
-    // Slider
     const autoSlider = document.getElementById("autoSlider");
     const autoValue = document.getElementById("autoValue");
 
@@ -157,13 +152,11 @@
       saveSettings();
     };
 
-    // Mode select
     document.getElementById("modeSelect").onchange = (e) => {
       settings.mode = e.target.value;
       saveSettings();
     };
 
-    // Toggle auto clicker
     document.getElementById("toggleAuto").onclick = () => {
       settings.autoClickerOn = !settings.autoClickerOn;
 
@@ -176,7 +169,6 @@
       saveSettings();
     };
 
-    // FPS
     const fpsSlider = document.getElementById("fpsSlider");
     const fpsValue = document.getElementById("fpsValue");
 
@@ -190,10 +182,8 @@
       Game.fps = settings.fps;
     };
 
-    // Close
     document.getElementById("closeMenu").onclick = toggleMenu;
 
-    // Restore auto clicker
     if (settings.autoClickerOn) {
       startAutoClicker();
     }
