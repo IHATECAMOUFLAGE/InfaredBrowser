@@ -34,7 +34,6 @@ export default async function (fastify) {
 
       const ids = [];
 
-      // First pass: collect unique video IDs
       for (const card of cards) {
         const refMatch = card.match(/data-referenceurl="([^"]+)"/);
         const hrefMatch = card.match(/href="([^"]+)"/);
@@ -56,7 +55,6 @@ export default async function (fastify) {
         return reply.send({ results: [] });
       }
 
-      // Second pass: extract metadata for each ID
       for (const card of cards) {
         const refMatch = card.match(/data-referenceurl="([^"]+)"/);
         const hrefMatch = card.match(/href="([^"]+)"/);
