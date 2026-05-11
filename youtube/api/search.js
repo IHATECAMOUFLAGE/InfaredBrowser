@@ -11,19 +11,16 @@ export default async function (fastify) {
       const seen = new Set();
 
       const searchUrl =
-        "https://ytapi.apps.mattw.io/v3/search?" +
+        "https://video.search.yahoo.com/search/video?" +
         new URLSearchParams({
-          part: "snippet",
-          q: query,
-          type: "video",
-          maxResults: "30",
-          key: "foo1"
+          p: query + " youtube",
+          fr: "sfp"
         });
 
       const searchResponse = await fetch(searchUrl, {
         headers: {
           "User-Agent": "Mozilla/5.0",
-          Accept: "application/json"
+          Accept: "text/html"
         }
       });
 
@@ -31,13 +28,24 @@ export default async function (fastify) {
         return reply.send({ results: [] });
       }
 
-      const searchData = await searchResponse.json();
+      const html = await searchResponse.text();
+
+      const cards = html.split('<li class="tile').slice(1);
 
       const ids = [];
 
-      for (const item of searchData.items || []) {
-        const id = item.id?.videoId;
+      // First pass: collect unique video IDs
+      for (const card of cards) {
+        const refMatch = card.match(/data-referenceurl="([^"]+)"/);
+        const hrefMatch = card.match(/href="([^"]+)"/);
 
+        const url = refMatch?.[1] || hrefMatch?.[1];
+        if (!url) continue;
+
+        const idMatch = url.match(/v=([^&]+)/);
+        if (!idMatch) continue;
+
+        const id = idMatch[1];
         if (!id || seen.has(id)) continue;
 
         seen.add(id);
@@ -48,38 +56,47 @@ export default async function (fastify) {
         return reply.send({ results: [] });
       }
 
-      const videosUrl =
-        "https://ytapi.apps.mattw.io/v3/videos?" +
-        new URLSearchParams({
-          part: "snippet,contentDetails,statistics",
-          id: ids.join(","),
-          key: "foo1"
-        });
+      // Second pass: extract metadata for each ID
+      for (const card of cards) {
+        const refMatch = card.match(/data-referenceurl="([^"]+)"/);
+        const hrefMatch = card.match(/href="([^"]+)"/);
+        const url = refMatch?.[1] || hrefMatch?.[1];
+        if (!url) continue;
 
-      const videosResponse = await fetch(videosUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-          Accept: "application/json"
-        }
-      });
+        const idMatch = url.match(/v=([^&]+)/);
+        if (!idMatch) continue;
 
-      if (!videosResponse.ok) {
-        return reply.send({ results: [] });
-      }
+        const id = idMatch[1];
+        if (!ids.includes(id)) continue;
 
-      const videosData = await videosResponse.json();
+        const titleMatch = card.match(/tile-title[^>]*>(.*?)<\/p>/s);
+        const title = titleMatch
+          ? titleMatch[1].replace(/<[^>]+>/g, "").trim()
+          : "";
 
-      for (const item of videosData.items || []) {
+        const thumbMatch = card.match(/<img[^>]+src="([^"]+)"/);
+        const thumbnail =
+          thumbMatch?.[1] ||
+          `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+
+        const durationMatch = card.match(/class="[^"]*time[^"]*"[^>]*>(.*?)<\/p>/);
+        const duration = durationMatch?.[1]?.trim() || "unknown";
+
+        const viewsMatch = card.match(/(\d[\d.,]*[MK]?) views/i);
+        const views = viewsMatch?.[1] || "unknown";
+
+        const channelMatch = card.match(/tile-domain[^>]*>(.*?)<\/p>/);
+        const channel = channelMatch
+          ? channelMatch[1].replace(/<[^>]+>/g, "").trim()
+          : "YouTube";
+
         results.push({
-          id: item.id,
-          title: item.snippet?.title || "",
-          thumbnail:
-            item.snippet?.thumbnails?.medium?.url ||
-            item.snippet?.thumbnails?.default?.url ||
-            `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
-          duration: item.contentDetails?.duration || "unknown",
-          views: item.statistics?.viewCount || "unknown",
-          channel: item.snippet?.channelTitle || "YouTube"
+          id,
+          title,
+          thumbnail,
+          duration,
+          views,
+          channel
         });
       }
 
